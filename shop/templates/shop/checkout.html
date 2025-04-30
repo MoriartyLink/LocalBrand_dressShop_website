@@ -1,49 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Checkout | Local Brand Shop</title>
-</head>
-<body>
-    {% extends 'shop/base.html' %}
-
-{% block title %}Checkout | Local Brand Shop{% endblock %}
+{% extends 'shop/base.html' %}
+{% block title %}Checkout - Darling & Co{% endblock %}
 
 {% block content %}
-<h1>Checkout</h1>
-
-{% if cart_items %}
-<table class="table">
-    <thead>
-        <tr>
-            <th>Dress</th>
-            <th>Quantity</th>
-            <th>Total</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in cart_items %}
-        <tr>
-            <td>{{ item.dress.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>${{ item.total }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<h3>Total Price: ${{ total_price }}</h3>
-
-<!-- Later we'll add real payment here -->
-<a href="#" class="btn btn-success mt-3">Proceed to Payment</a>
-
-{% else %}
-<p>Your cart is empty.</p>
-{% endif %}
-
-<a href="{% url 'shop' %}" class="btn btn-secondary mt-3">Continue Shopping</a>
-
+<div class="container mt-5 mb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body text-center">
+          <h2 class="text-maroon mb-4">Checkout</h2>
+          
+          {% if total > 0 %}
+            <p class="fs-5">You're about to pay <strong>${{ total }}</strong> for <strong>{{ total_items }}</strong> item{{ total_items|pluralize }}.</p>
+            <p class="text-muted small mb-4">All transactions are secure and encrypted using Stripe.</p>
+            <form method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-lg px-5">Pay Now</button>
+            </form>
+          {% else %}
+            <p class="text-muted">Your cart is empty. <a href="{% url 'shop' %}" class="text-maroon">Browse our collection</a>.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+    <p class="text-muted small">Payments powered by Stripe — encrypted & secure.</p>
+</div>
 {% endblock %}
-
-</body>
-</html>

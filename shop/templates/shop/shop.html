@@ -1,34 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Shop | Local Brand Shop</title>
-</head>
-<body>
+{% extends 'shop/base.html' %}
+{% block title %}Our Collection - Darling & Co{% endblock %}
 
-
-
-
-<h1 class="mb-4">Shop Dresses</h1>
-
-<div class="row">
-
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-center text-maroon">Our Collection</h2>
+  <div class="row">
+    {% for dress in dresses %}
     <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <img src="{{ dress.image.url }}" class="card-img-top" style="height: 300px; object-fit: cover;" alt="{{ dress.name }}">
-            <div class="card-body">
-                <h5 class="card-title">{{ dress.name }}</h5>
-                <p class="card-text">{{ dress.brand }}</p>
-                <p class="card-text">${{ dress.price }}</p>
-                {% if dress.id %}
-                <a href="{% url 'add_to_cart' dress.id %}" class="btn btn-primary">Add to Cart</a>
-                {% endif %}
-            </div>
+      <div class="card h-100 shadow-sm">
+        <img src="{{ dress.image.url }}" class="card-img-top" alt="{{ dress.name }}" style="height: 500px; object-fit: cover;">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title text-center">{{ dress.name }}</h5>
+          <p class="card-text text-center">${{ dress.price }}</p>
+          <div class="mt-auto text-center">
+            <a href="{% url 'add_to_cart' dress.id %}" class="btn btn-outline-danger w-100">Add to Cart</a>
+          </div>
         </div>
+      </div>
     </div>
-
+    {% endfor %}
+  </div>
 </div>
-
-
-</body>
-</html>
+{% endblock %}

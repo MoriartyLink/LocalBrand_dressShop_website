@@ -1,0 +1,13 @@
+{% extends 'shop/base.html' %}
+{% block title %}Order Confirmed - Darling & Co{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5 text-center">
+  <div class="card shadow-sm p-4">
+    <h2 class="text-maroon mb-3">Thank You for Your Order! 🎉</h2>
+    <p class="fs-5">We've received your order and sent you a confirmation email.</p>
+    <p class="text-muted">You can track your order status in <a href="{% url 'view_orders' %}" class="text-maroon">My Orders</a>.</p>
+    <a href="{% url 'shop' %}" class="btn btn-outline-danger mt-4">Continue Shopping</a>
+  </div>
+</div>
+{% endblock %}

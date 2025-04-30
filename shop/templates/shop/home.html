@@ -1,17 +1,63 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home | Local Brand Shop</title>
-</head>
-<body>
+{% extends 'shop/base.html' %}
+{% block title %}Welcome to Darling & Co{% endblock %}
 
-
-<h1 class="text-center"> Welcome to Local Brand Shop </h1>
-<p class="text-center">Discover beautiful dresses from our local brand!</p>
-
-<div class="text-center">
-    <a href="{% url 'shop' %}" class="btn btn-primary mt-3">Shop Now</a>
+{% block content %}
+<div class="text-center py-5" style="background-color: #340000;">
+  <div class="container" style="padding: 2rem;">
+    <h1 class="display-4 text-light">Discover Timeless Elegance</h1>
+    <p class="lead text-light">Elevate your wardrobe with our curated local fashion.</p>
+    <a href="{% url 'shop' %}" class="btn btn-outline-light btn-lg">Shop Now</a>
+  </div>
 </div>
-</body>
-</html>
+
+
+<div class="container mt-5" >
+  <h2 class="mb-4 text-center text-maroon">Featured Dresses</h2>
+  <div class="row">
+    {% for dress in featured_dresses %}
+    <div class="col-md-4 mb-4">
+      <div class="card h-100" style="background-color: #340000">
+       <img src="{{ dress.image.url }}" class="card-img-top" alt="{{ dress.name }}" style="height: 500px; object-fit: cover; object-position: center;">
+
+        <div class="card-body">
+          <h5 class="card-title">{{ dress.name }}</h5>
+          <p class="card-text">${{ dress.price }}</p>
+          <a href="{% url 'add_to_cart' dress.id %}" class="btn btn-outline-danger">Add to Cart</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+<section style="background-color: #550000;" class="py-5 mt-5">
+<hr class="my-5">
+
+<div class="container text-center">
+  <h2 class="mb-4 text-maroon">What Our Customers Say</h2>
+  <div class="row">
+    <div class="col-md-4 mb-4" >
+      <div class="card p-3 shadow-sm h-100" style="background-color:#650000">
+        <p class="fst-italic">"Absolutely stunning quality. I felt so confident wearing this dress!  ★★★★★ "</p>
+        <h6 class="fw-bold mb-0">— Sofia L.</h6>
+        <small class="text-muted">Bangkok, TH</small>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4 " >
+      <div class="card p-3 shadow-sm h-100 " style="background-color:#650000">
+        <p class="fst-italic">"Darling & Co never disappoints. The fabric, the fit — perfect!  ★★★★★ "</p>
+        <h6 class="fw-bold mb-0">— Anita W.</h6>
+        <small class="text-muted">Chiang Mai</small>
+      </div>
+    </div>
+    <div class="col-md-4 mb-4">
+      <div class="card p-3 shadow-sm h-100" style="background-color:#650000">
+        <p class="fst-italic">"I received compliments all night. Will definitely shop again.  ★★★★★ "</p>
+        <h6 class="fw-bold mb-0">— Jasmine T.</h6>
+        <small class="text-muted">Khon Kaen</small>
+      </div>
+    </div>
+  </div>
+</div>
+  </section>
+
+{% endblock %}

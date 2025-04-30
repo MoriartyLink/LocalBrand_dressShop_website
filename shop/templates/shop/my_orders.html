@@ -1,0 +1,52 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<h2>My Orders</h2>
+
+{% if orders %}
+  {% for order in orders %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <h5 class="card-title">
+          Order #{{ order.id }} —
+          {% if order.status == 'pending' %}
+              <span class="badge bg-warning text-dark">Pending</span>
+          {% elif order.status == 'shipped' %}
+              <span class="badge bg-primary">Shipped</span>
+          {% elif order.status == 'delivered' %}
+              <span class="badge bg-success">Delivered</span>
+          {% endif %}
+        </h5>
+
+        <p class="card-text">Date: {{ order.created_at|date:"Y-m-d H:i" }}</p>
+        <p class="card-text"><strong>Total:</strong> ${{ order.total_price }}</p>
+
+        {% if order.tracking_number %}
+          <p class="card-text">
+            <strong>Tracking Number:</strong> {{ order.tracking_number }}
+          </p>
+        {% endif %}
+        {% if order.carrier %}
+          <p class="card-text">
+            <strong>Carrier:</strong> {{ order.get_carrier_display }}
+          </p>
+        {% endif %}
+
+        <ul class="list-group list-group-flush mt-3">
+          {% for item in order.items.all %}
+            <li class="list-group-item">
+              {{ item.quantity }} × {{ item.dress_name }} — ${{ item.price }}
+            </li>
+          {% endfor %}
+        </ul>
+
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <p>You have no orders yet.</p>
+{% endif %}
+
+{% endblock %}
