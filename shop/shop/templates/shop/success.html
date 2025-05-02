@@ -1,0 +1,14 @@
+{% extends 'shop/base.html' %}
+{% block title %}Order Successful - Darling & Co{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+  <div class="alert alert-success py-5">
+    <h2 class="text-success mb-3">Thank you for your order!</h2>
+    <p>Your order <strong>#{{ order.id }}</strong> has been placed successfully.</p>
+    <p>Total: <strong>${{ order.total_price }}</strong></p>
+    <a href="{% url 'view_orders' %}" class="btn btn-outline-success mt-3">View My Orders</a>
+    <a href="{% url 'shop' %}" class="btn btn-link mt-3">Continue Shopping</a>
+  </div>
+</div>
+{% endblock %}

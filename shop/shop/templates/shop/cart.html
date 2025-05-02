@@ -1,0 +1,48 @@
+{% extends 'shop/base.html' %}
+{% block title %}Your Cart - Darling & Co{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center text-maroon mb-4">Your Cart</h2>
+
+  {% if cart_items %}
+    <div class="row">
+      <div class="col-md-8">
+        {% for item in cart_items %}
+          <div class="card mb-3 shadow-sm">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="{{ item.variant.image.url }}" class="img-fluid rounded-start" alt="Variant Image">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">{{ item.variant.product.name }}</h5>
+                  <p>Product Code: <strong>{{ item.variant.product.code }}</strong></p>
+                  <p>Color: <span class="badge bg-secondary">{{ item.variant.color }}</span></p>
+                  <p>Size: {{ item.variant.size }}</p>
+                  <p>Price: ${{ item.variant.price }}</p>
+                  <p>Quantity: {{ item.quantity }}</p>
+                  <p class="fw-semibold">Subtotal: ${{ item.subtotal }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <div class="col-md-4">
+        <div class="card p-4 shadow-sm">
+          <h4 class="text-maroon">Cart Summary</h4>
+          <hr>
+          <p><strong>Total: ${{ total }}</strong></p>
+          <a href="{% url 'checkout' %}" class="btn btn-danger w-100">Proceed to Checkout</a>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-warning text-center">
+      Your cart is empty. <a href="{% url 'shop' %}">Browse our collection</a>.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

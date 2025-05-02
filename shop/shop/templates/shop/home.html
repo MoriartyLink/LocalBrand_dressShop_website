@@ -1,0 +1,72 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}Welcome to Darling & Co{% endblock %}
+
+{% block content %}
+
+<!-- Hero section -->
+<div class="container my-5">
+  <div class="glass-card p-5 text-center mx-auto" style="max-width: 800px;">
+    <h1 class="display-5 text-maroon fw-bold">Welcome to Darling & Co</h1>
+    <p class="lead text-dark mt-3 mb-4">Timeless elegance, crafted by local designers — discover the latest collection in style.</p>
+    <a href="{% url 'shop' %}" class="btn btn-gradient px-4 py-2">Shop Now</a>
+  </div>
+</div>
+
+<!-- Featured Products -->
+<div class="container mt-5">
+  <h2 class="mb-4 text-center text-maroon">Featured Dresses</h2>
+  <div class="row">
+    {% for product in products %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm product-grid-item">
+          {% if product.variants.first %}
+            <img src="{{ product.variants.first.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 400px; object-fit: cover;">
+          {% else %}
+            <div class="card-img-top bg-secondary text-white text-center py-5">No Image</div>
+          {% endif %}
+          <div class="card-body d-flex flex-column text-center">
+            <h5 class="card-title">{{ product.name }}</h5>
+            <p class="text-muted">Code: {{ product.code }}</p>
+            <p class="text-muted">{{ product.brand }}</p>
+            <p><strong>${{ product.base_price }}</strong></p>
+            <div class="text-warning mb-2">
+              {% if product.total_stock > 0 %}
+                {{ product.total_stock }} in stock
+              {% else %}
+                Out of stock
+              {% endif %}
+            </div>
+            <div class="mt-auto">
+              <a href="{% url 'product_detail' product.id %}" class="btn btn-outline-light w-100">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-light text-center">No featured products available yet.</p>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Testimonials Section -->
+<section style="background-color: #550000;" class="py-5 mt-5">
+  <hr class="my-5">
+  <div class="container text-center">
+    <h2 class="mb-4 text-maroon">What Our Customers Say</h2>
+    <div class="row">
+      {% for t in testimonials %}
+        <div class="col-md-4 mb-4">
+          <div class="card p-3 shadow-sm h-100" style="background-color:#650000">
+            <p class="fst-italic">"{{ t.quote }}"</p>
+            <h6 class="fw-bold mb-0">— {{ t.name }}</h6>
+            <small class="text-muted">{{ t.city }}</small>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}

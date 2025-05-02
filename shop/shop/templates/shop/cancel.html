@@ -1,0 +1,13 @@
+{% extends 'shop/base.html' %}
+{% block title %}Payment Canceled - Darling & Co{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5 text-center">
+  <div class="card shadow-sm p-4">
+    <h2 class="text-danger mb-3">Payment Canceled</h2>
+    <p class="fs-5">Looks like your checkout was canceled or failed.</p>
+    <p class="text-muted">If this was a mistake, you can try again or update your cart.</p>
+    <a href="{% url 'view_cart' %}" class="btn btn-outline-danger mt-4">Return to Cart</a>
+  </div>
+</div>
+{% endblock %}

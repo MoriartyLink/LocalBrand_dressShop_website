@@ -1,0 +1,25 @@
+{% extends 'shop/base.html' %}
+{% block title %}Checkout - Darling & Co{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center text-maroon mb-4">Checkout</h2>
+
+  {% if total_items > 0 %}
+    <div class="card shadow p-4">
+      <h4 class="text-maroon">Order Summary</h4>
+      <hr>
+      <p><strong>Total Items:</strong> {{ total_items }}</p>
+      <p><strong>Total Amount:</strong> ${{ total }}</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger w-100">Pay with Stripe</button>
+      </form>
+    </div>
+  {% else %}
+    <div class="alert alert-warning text-center">
+      Your cart is empty. <a href="{% url 'shop' %}">Continue Shopping</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
