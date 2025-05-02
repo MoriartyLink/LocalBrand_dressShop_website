@@ -1,45 +1,132 @@
 {% extends 'shop/base.html' %}
+{% load static %}
 {% block title %}Your Cart - Darling & Co{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
-  <h2 class="text-center text-maroon mb-4">Your Shopping Cart</h2>
+  <h2 class="text-center text-maroon mb-4">Your Cart</h2>
 
   {% if cart_items %}
-  <div class="table-responsive">
-    <table class="table table-bordered align-middle shadow-sm bg-white">
-      <thead class="table-light">
-        <tr>
-          <th scope="col">Item</th>
-          <th scope="col">Quantity</th>
-          <th scope="col">Price</th>
-          <th scope="col">Total</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
+    <div class="row">
+      <div class="col-md-8">
         {% for item in cart_items %}
-        <tr>
-          <td>{{ item.dress.name }}</td>
-          <td>{{ item.quantity }}</td>
-          <td>${{ item.dress.price }}</td>
-          <td>${{ item.total }}</td>
-          <td>
-            <a href="{% url 'remove_from_cart' item.dress.id %}" class="btn btn-sm btn-outline-danger">Remove</a>
-          </td>
-        </tr>
+          <div class="card mb-3 shadow-sm" data-variant-id="{{ item.variant.id }}">
+            <div class="row g-0">
+              <div class="col-md-4">
+                <img src="{{ item.variant.image.url }}" class="img-fluid rounded-start" alt="Variant Image">
+              </div>
+              <div class="col-md-8">
+                <div class="card-body">
+                  <h5 class="card-title">{{ item.variant.product.name }}</h5>
+                  <p>Product Code: <strong>{{ item.variant.product.code }}</strong></p>
+                  <p>Color: <span class="badge bg-secondary">{{ item.variant.color }}</span></p>
+                  <p>Size: {{ item.variant.size }}</p>
+                  <p>Price: ${{ item.variant.price }}</p>
+
+                  <div class="d-flex align-items-center gap-2 mb-2">
+                    <button class="btn btn-outline-secondary btn-sm btn-decrease">−</button>
+                    <input type="number" class="form-control text-center quantity-input" value="{{ item.quantity }}" min="1" readonly style="width: 60px;">
+                    <button class="btn btn-outline-secondary btn-sm btn-increase">+</button>
+                  </div>
+
+                  <p class="fw-semibold">Subtotal: $<span class="item-subtotal">{{ item.subtotal }}</span></p>
+
+                  <button class="btn btn-outline-danger btn-sm btn-remove-item">
+                    <i class="bi bi-trash"></i> Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
+      </div>
 
-  <div class="text-end mt-4">
-    <h4 class="text-maroon">Cart Total: ${{ total }}</h4>
-    <a href="{% url 'checkout' %}" class="btn btn-danger btn-lg mt-3">Proceed to Checkout</a>
-  </div>
-
+      <div class="col-md-4">
+        <div class="card p-4 shadow-sm">
+          <h4 class="text-maroon">Cart Summary</h4>
+          <hr>
+          <p><strong>Total: $<span id="cart-total">{{ total }}</span></strong></p>
+          <a href="{% url 'checkout' %}" class="btn btn-danger w-100">Proceed to Checkout</a>
+        </div>
+      </div>
+    </div>
   {% else %}
-    <p class="text-center text-muted">Your cart is empty. <a href="{% url 'shop' %}" class="text-maroon">Shop now</a>.</p>
+    <div class="alert alert-warning text-center">
+      Your cart is empty. <a href="{% url 'shop' %}">Browse our collection</a>.
+    </div>
   {% endif %}
 </div>
+
+<!-- Toast Notification UI -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="toast-message" class="toast text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body"></div>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Cart JS -->
+<script>
+  function showToast(message, type = 'success') {
+    const toastEl = document.getElementById('toast-message');
+    toastEl.classList.remove('text-bg-success', 'text-bg-danger');
+    toastEl.classList.add(`text-bg-${type}`);
+    toastEl.querySelector('.toast-body').textContent = message;
+    const toast = new bootstrap.Toast(toastEl);
+    toast.show();
+  }
+
+  document.querySelectorAll('.btn-increase, .btn-decrease').forEach(button => {
+    button.addEventListener('click', async function () {
+      const card = this.closest('.card');
+      const variantId = card.dataset.variantId;
+      const input = card.querySelector('.quantity-input');
+      let quantity = parseInt(input.value);
+      quantity = this.classList.contains('btn-increase') ? quantity + 1 : Math.max(1, quantity - 1);
+      input.value = quantity;
+
+      const response = await fetch(`/update-cart/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ variant_id: variantId, quantity: quantity })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        card.querySelector('.item-subtotal').textContent = data.subtotal.toFixed(2);
+        document.getElementById('cart-total').textContent = data.total.toFixed(2);
+        showToast('Cart updated');
+      } else {
+        showToast('Failed to update cart', 'danger');
+      }
+    });
+  });
+
+  document.querySelectorAll('.btn-remove-item').forEach(button => {
+    button.addEventListener('click', async function () {
+      const card = this.closest('.card');
+      const variantId = card.dataset.variantId;
+
+      const response = await fetch(`/remove-from-cart/${variantId}/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': '{{ csrf_token }}',
+        }
+      });
+
+      if (response.ok) {
+        card.remove();
+        showToast('Item removed');
+        location.reload();  // optional: reload to update total and check empty cart
+      } else {
+        showToast('Failed to remove item', 'danger');
+      }
+    });
+  });
+</script>
 {% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block title %}{{ product.name }} | Darling & Co{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Product Images -->
+    <div class="col-md-6">
+      <div class="border rounded p-2 bg-white d-flex justify-content-center align-items-center" style="width: 500px; height: 500px;">
+        <img id="mainImage" src="{{ images.0.image.url }}" class="img-fluid" alt="{{ product.name }}" style="max-height: 100%; max-width: 100%;">
+      </div>
+      <div class="mt-3 d-flex gap-2 flex-wrap">
+        {% for img in images %}
+          <img src="{{ img.image.url }}" class="img-thumbnail" style="width: 80px; height: 80px; object-fit: cover; cursor: pointer;"
+               onclick="document.getElementById('mainImage').src=this.src">
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="col-md-6">
+      <h2 class="text-maroon">{{ product.name }}</h2>
+      <p class="text-muted mb-1">Brand: {{ product.brand }}</p>
+      <p class="fs-4 fw-bold mb-1">${{ default_variant.price }}</p>
+      <p class="text-secondary mb-4">Code: <span id="variantCode">{{ default_variant.code }}</span></p>
+
+      <form method="post" action="{% url 'add_to_cart' product.id %}">
+        {% csrf_token %}
+
+        <!-- Color Options -->
+        <div class="mb-3">
+          <label class="form-label">Color:</label>
+          <div class="d-flex flex-wrap gap-2">
+            {% for variant in product.variants.all %}
+              <button type="button"
+                      class="btn btn-outline-secondary variant-btn"
+                      data-variant-id="{{ variant.id }}"
+                      data-image-url="{{ variant.images.first.image.url }}"
+                      data-code="{{ variant.code }}"
+                      data-sizes='{{ variant.size|escapejs }}'>
+                {{ variant.color }}
+              </button>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Size Dropdown -->
+        <div class="mb-3">
+          <label for="sizeSelect" class="form-label">Size:</label>
+          <select name="size" id="sizeSelect" class="form-select w-50" required>
+            {% for size in sizes %}
+              <option value="{{ size }}">{{ size }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Quantity Input -->
+        <div class="mb-3">
+          <label for="quantityInput" class="form-label">Quantity:</label>
+          <input type="number" name="quantity" id="quantityInput" value="1" min="1" class="form-control w-25" required>
+        </div>
+
+        <input type="hidden" name="variant_id" id="selectedVariantId" value="{{ default_variant.id }}">
+        <button type="submit" class="btn btn-danger">Add to Cart</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- JS: Lazada-style interactivity -->
+<script>
+  document.querySelectorAll('.variant-btn').forEach(button => {
+    button.addEventListener('click', function () {
+      // Set main image and variant ID
+      const imageUrl = this.dataset.imageUrl;
+      const variantId = this.dataset.variantId;
+      const variantCode = this.dataset.code;
+
+      document.getElementById('mainImage').src = imageUrl;
+      document.getElementById('selectedVariantId').value = variantId;
+      document.getElementById('variantCode').innerText = variantCode;
+
+      // Highlight selected button
+      document.querySelectorAll('.variant-btn').forEach(btn => btn.classList.remove('btn-dark'));
+      this.classList.add('btn-dark');
+    });
+  });
+</script>
+{% endblock %}

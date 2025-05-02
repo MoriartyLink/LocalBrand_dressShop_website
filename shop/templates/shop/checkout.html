@@ -2,27 +2,59 @@
 {% block title %}Checkout - Darling & Co{% endblock %}
 
 {% block content %}
-<div class="container mt-5 mb-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card shadow-sm">
-        <div class="card-body text-center">
-          <h2 class="text-maroon mb-4">Checkout</h2>
-          
-          {% if total > 0 %}
-            <p class="fs-5">You're about to pay <strong>${{ total }}</strong> for <strong>{{ total_items }}</strong> item{{ total_items|pluralize }}.</p>
-            <p class="text-muted small mb-4">All transactions are secure and encrypted using Stripe.</p>
-            <form method="post">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-danger btn-lg px-5">Pay Now</button>
-            </form>
-          {% else %}
-            <p class="text-muted">Your cart is empty. <a href="{% url 'shop' %}" class="text-maroon">Browse our collection</a>.</p>
-          {% endif %}
-        </div>
+<div class="container mt-5">
+  <!-- Progress Indicator -->
+  <div class="checkout-progress mb-4">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="step text-center flex-fill">
+        <div class="circle bg-maroon text-white">1</div>
+        <small>Cart</small>
+      </div>
+      <div class="progress-line flex-fill"></div>
+      <div class="step text-center flex-fill">
+        <div class="circle bg-maroon text-white">2</div>
+        <small>Checkout</small>
+      </div>
+      <div class="progress-line flex-fill"></div>
+      <div class="step text-center flex-fill">
+        <div class="circle bg-light border">3</div>
+        <small>Payment</small>
       </div>
     </div>
   </div>
-    <p class="text-muted small">Payments powered by Stripe — encrypted & secure.</p>
+
+  <div class="card shadow p-4">
+    {% if total_items > 0 %}
+      <h4 class="text-maroon mb-3">Order Summary</h4>
+      <p><strong>Total Items:</strong> {{ total_items }}</p>
+      <p><strong>Total Amount:</strong> ${{ total }}</p>
+      <form method="post" id="checkoutForm">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger w-100">
+          <span id="btnText">Pay with Stripe</span>
+          <div class="spinner-border spinner-border-sm d-none" id="btnSpinner" role="status"></div>
+        </button>
+      </form>
+    {% else %}
+      <div class="alert alert-warning text-center">
+        Your cart is empty. <a href="{% url 'shop' %}">Continue Shopping</a>
+      </div>
+    {% endif %}
+  </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const checkoutForm = document.getElementById('checkoutForm');
+  const btnSpinner = document.getElementById('btnSpinner');
+  const btnText = document.getElementById('btnText');
+
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', () => {
+      btnSpinner.classList.remove('d-none');
+      btnText.textContent = "Processing...";
+    });
+  }
+</script>
 {% endblock %}
